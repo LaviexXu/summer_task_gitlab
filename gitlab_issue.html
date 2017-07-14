@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<title>Issue.LavieXu/xxProject</title>
+	<style type="text/css">
+	ul{list-style-type:none;
+		vertical-align: baseline; 
+		
+		}
+	li{
+		margin: 10px;
+	}
+
+	.alignleft{float:left;}
+	.alignright{float:right;}
+	.clear{clear: both}
+	.topheader{background-color: #f8f8f8;
+		border-bottom-color: #d3d3d3;
+		border-bottom-style: solid;
+		border-width: thin;
+	}
+	.darkwrap{background-color: #f0f0f0;}
+	a.btn{
+		background-color: #3CB371;
+		border-style: solid;
+		border-color: #808080;
+		border-radius: 5px;
+		border-width: thin;
+		color: #ffffff;
+		padding: 10px;
+	}
+	.mainbody{
+		border-top-color: #d3d3d3;
+		border-top-style: solid;
+		border-width: thin;
+	}
+	.IssueInfo{
+		border-top-color:#d3d3d3;
+		border-top-style:solid;
+		border-width:thin;
+		background-color:#f8f8f8;
+		padding:5px;
+	}
+	a:link{text-decoration: none;}
+	a:visited{text-decoration: none}
+	.unselected{color: #696969;}
+	.selected{
+		color: black;
+		border-bottom-style:solid;
+		border-bottom-color: #4169e1;
+		border-width: 2px; 
+	}
+	.bubble{background-color: #d8d8d8;
+				border-radius: 8px;
+				padding-left: 4px;
+				padding-right:4px;
+				}
+	.issuename{
+		line-height:2em;
+		font-family:sans-serif;
+		font-weight:bold;
+	}
+	
+	</style>
+	<script>
+	var listSelectedItem='Open';
+	function matchIssue(){
+	//implement the filter(just label)
+	}
+	function setSelected(curId){
+		var lastSel=document.getElementById(listSelectedItem);
+		lastSel.className='unselected';
+		var curSel=document.getElementById(curId);
+		curSel.className='selected';
+		listSelectedItem=curId;
+	}
+	</script>
+</head>
+<body>
+	<div class="topheader">
+	<header>
+	<h1 class="alignleft">LavieXu/xxProject</h1>
+	<ul class="alignright">
+	<li>
+	<form>
+		<input class="alignleft" type="text" name="Search"/>
+		<input class="alignleft" type="submit" value="search" />
+	</form>
+	</li>
+	</ul>
+	<div class="clear">
+	</div>
+	</header>
+
+	<ul>
+		<li class="alignleft">
+			<a title="Project"><span class="unselected">Project</span></a>
+		</li>
+		<li class="alignleft">
+			<a title="Issuses"><span class="selected"><b>Issues</b>
+				<span class="bubble">3</span></span></a>
+		</li>
+		<li class="alignleft">
+			<a title="MergeRequest"><span class="unselected">Merge Request
+				<span class="bubble">1</span></span></a>
+		</li>
+		<li class="alignleft">
+			<a title="Pipelines"><span class="unselected">Pipelines</span></a>
+		</li>
+		<li class="alignleft">
+			<a title="Wiki"><span class="unselected">Wiki</span></a>
+		</li>
+		<li class="alignleft">
+			<a title="Settings"><span class="unselected">Settings</span></a>
+		</li>
+		<div class="clear">
+		</div>
+	</ul>
+	</div>
+	<div class="darkwrap">
+		<ul>
+		<li class="alignleft">
+			<a title="List" style="color:#4169e1"><b>List</b></a></li>
+		<li class="alignleft">
+			<a title="Board"><span class="unselected">Board</span></a></li>
+		<li class="alignleft">
+			<a title="Lables"><span class="unselected">Labels</span></a></li>
+		<li class="alignleft">
+			<a title="Milestones"><span class="unselected">Milestones</span></a></li>
+			<div class="clear">
+			</div>
+		</ul>
+	
+	</div>
+	<div>
+	<ul>
+		<li class="alignleft"><a id="Open" class="selected" onclick="setSelected('Open')">
+			<b>Open </b><span class="bubble"> 2</span></a></li>
+		<li class="alignleft"><a id="Closed" class="unselected" onclick="setSelected('Closed')">
+			<b>Closed </b><span class="bubble"> 1</span></a></li>
+		<li class="alignleft"><a id="All" class="unselected" onclick="setSelected('All')">
+			<b>All </b><span class="bubble"> 3</span></a></li>
+		<li class="alignright"><a title="NewIssue" class="btn">New Issue</a></li>
+			<div class="clear">
+			</div>
+	</ul>
+	</div>
+	<div class="mainbody">
+		<form class="filter" onSubmit="matchIssue()">
+		<input style="margin:10px;width:600px;height:30px;" type="text" name="searchfilter"/>		
+		</form>
+	<div class="IssueInfo" data-issuestatus="open">
+		<span class="issuename">Open Test Issue1</span><br/>
+		opened 2 days ago <span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
+		>bug</span>
+	</div>
+	<div class="IssueInfo" data-issuestatus="open">
+		<span class="issuename">Open Test Issue2</span><br/>
+		opened 4 days ago 
+		<span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
+		>bug</span>
+		<span class=bubble data-label="issue" style="background-color:#0099cc;color:white;" 
+		>issue</span>
+		</div>
+<div class="IssueInfo" data-issuestatus="closed">
+		<span class="issuename">Closed Test Issue1</span><br/>
+		opened 5 days ago <span class=bubble data-label="issue" style="background-color:#0099cc;color:white;" 
+		>issue</span>
+	</div>
+	</div>
+</body>
+</html>
