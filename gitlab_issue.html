@@ -84,16 +84,20 @@
 			for(i=0;i!=null;i++)
 			{
 				curElem=issueList[i];
-				curElem.style.display=inline;
+				curElem.style.display='block';
 			}
 		}
 		else{
 		for(i=0;i!=null;i++)
 			{
 				curElem=issueList[i];
-				if(curElem.dataset.issusestatus!=status)
+				if(curElem.dataset.issuestatus!=status)
 				{
-					curElem.style.display=none;
+					curElem.style.display='none';
+				}
+				else
+				{
+				    curElem.style.display='block';
 				}
 			}
 		}
@@ -173,23 +177,23 @@
 		<form class="filter" onSubmit="matchIssue()">
 		<input style="margin:10px;width:600px;height:30px;" type="text" name="searchfilter"/>		
 		</form>
-	<div class="IssueInfo" data-issuestatus="open">
+	<div class="IssueInfo" data-issuestatus="Open">
 		<span class="issuename">Open Test Issue1</span><br/>
 		opened 2 days ago <span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
-		>bug</span>
+		>bug</span><br/>
 	</div>
-	<div class="IssueInfo" data-issuestatus="open">
+	<div class="IssueInfo" data-issuestatus="Open">
 		<span class="issuename">Open Test Issue2</span><br/>
 		opened 4 days ago 
 		<span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
 		>bug</span>
 		<span class=bubble data-label="issue" style="background-color:#0099cc;color:white;" 
-		>issue</span>
+		>issue</span><br/>
 		</div>
-<div class="IssueInfo" data-issuestatus="closed">
+<div class="IssueInfo" data-issuestatus="Closed" style="display: none;">
 		<span class="issuename">Closed Test Issue1</span><br/>
-		opened 5 days ago <span class=bubble data-label="issue" style="background-color:#0099cc;color:white;" 
-		>issue</span>
+		opened 5 days ago <span class=bubble data-label="issue" style="background-color:#0099cc;color:white;"
+		>issue</span><br/>
 	</div>
 	</div>
 </body>
