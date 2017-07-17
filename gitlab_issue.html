@@ -27,7 +27,7 @@
 		color: #ffffff;
 		padding: 10px;
 	}
-	.mainbody{
+	.listmainbody{
 		border-top-color: #d3d3d3;
 		border-top-style: solid;
 		border-width: thin;
@@ -53,6 +53,11 @@
 				padding-left: 4px;
 				padding-right:4px;
 				}
+	.label{
+		border-radius: 8px;
+		padding-left: 4px;
+		padding-right:4px;
+	}
 	.issuename{
 		line-height:2em;
 		font-family:sans-serif;
@@ -63,7 +68,39 @@
 	<script>
 	var listSelectedItem='Open';
 	function matchIssueLabel(){
-	//implement the filter(just label)
+
+		//setSelected(listSelectedItem);
+		var issueList=document.getElementsByClassName("IssueInfo");
+		var i;
+		var searchContent=document.getElementById("searchfilter").value;
+
+		var matchFlag=0;
+		if(searchContent==null||searchContent=="")
+		{
+            for(i=0;i<issueList.length;i++)
+                issueList[i].style.display="block";
+		}
+		else {
+            for (i = 0; i < issueList.length; i++) {
+                matchFlag=0;
+                var childList = issueList[i].getElementsByClassName("label");
+                var j;
+                for (j = 0; j < childList.length; j++) {
+                    if (childList[j].dataset.label == searchContent) {
+                        matchFlag = 1;
+                        break;
+                    }
+                }
+                if (matchFlag == 1)	//find match label
+                {
+                    issueList[i].style.display = 'block';
+                }
+                else {
+                    issueList[i].style.display = 'none';
+                }
+            }
+        }
+		return false;
 	}
 
 	function setSelected(curId){
@@ -160,6 +197,7 @@
 		</ul>
 	
 	</div>
+	<div id="List" style="display: none;">
 	<div>
 	<ul>
 		<li class="alignleft"><a id="Open" class="selected" onclick="setSelected('Open')">
@@ -173,28 +211,33 @@
 			</div>
 	</ul>
 	</div>
-	<div class="mainbody">
-		<form class="filter" onSubmit="matchIssue()">
-		<input style="margin:10px;width:600px;height:30px;" type="text" name="searchfilter"/>		
+	<div class="listmainbody">
+		<form class="filter"  onSubmit="return matchIssueLabel()" >
+		<input id="searchfilter" style="margin:10px;width:600px;height:30px;" type="text" name="searchfilter"/>
 		</form>
 	<div class="IssueInfo" data-issuestatus="Open">
 		<span class="issuename">Open Test Issue1</span><br/>
-		opened 2 days ago <span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
-		>bug</span><br/>
+		<span>#3 </span><span>opened 2 days ago </span><span class=label data-label="bug" style="background-color:#ff3333;color:white;"
+		>bug</span>
+		<span class="alignright">update 1 days ago</span><br/>
 	</div>
 	<div class="IssueInfo" data-issuestatus="Open">
 		<span class="issuename">Open Test Issue2</span><br/>
-		opened 4 days ago 
-		<span class=bubble data-label="bug" style="background-color:#ff3333;color:white;" 
+		<span>#2 </span><span>opened 4 days ago</span>
+		<span class=label data-label="bug" style="background-color:#ff3333;color:white;"
 		>bug</span>
-		<span class=bubble data-label="issue" style="background-color:#0099cc;color:white;" 
-		>issue</span><br/>
+		<span class=label data-label="issue" style="background-color:#0099cc;color:white;"
+		>issue</span>
+		<span class="alignright">update 3 days ago</span><br/>
 		</div>
 <div class="IssueInfo" data-issuestatus="Closed" style="display: none;">
 		<span class="issuename">Closed Test Issue1</span><br/>
-		opened 5 days ago <span class=bubble data-label="issue" style="background-color:#0099cc;color:white;"
-		>issue</span><br/>
+	<span>#1 </span>opened 2 weeks ago </span><span class=label data-label="issue" style="background-color:#0099cc;color:white;"
+>issue</span>
+		<span class="alignright">update a week ago</span><br/>
 	</div>
 	</div>
+	</div>
+	<--!this is the board part-->
 </body>
 </html>
