@@ -5,6 +5,7 @@
 	<style type="text/css">
 	ul{list-style-type:none;
 		height: 100%;
+		padding:0;
 		}
 	li{
 		margin: 10px;
@@ -82,7 +83,7 @@
 		padding-left: 4px;
 		padding-right:4px;
 		color:white;
-		background-color: #ff33ff;
+		margin-left: 3px;
 	}
 	.issuename{
 		line-height:2em;
@@ -119,8 +120,9 @@
 		}
 		.issuenum{
 			float: right;
+			font-weight: normal;
 			min-width: 15px;
-
+			border-radius: 4px;
 			padding-left:2px ;
 			padding-right: 2px;
 			outline: solid thin #d3d3d3;
@@ -143,10 +145,19 @@
 			color:#696969;
 			margin-left: 5px;
 		}
+	.addIssueInLabelList{
+		outline: thin solid #d8d8d8;
+		font-weight: normal;
+		margin-top: 10px;
+	}
 	</style>
 	<script>
+
 	var listSelectedItem='Open';
 	var subheaderSelectedItem="List";
+	var existLabelList=new Array("bug","issue","edge");
+	var labelColorList=new Array("#ff3333","#0099cc","#33aa55");
+
 	function matchIssueLabel(){
 		var issueList=document.getElementsByClassName("IssueInfo");
 		var i;
@@ -155,8 +166,7 @@
 		var matchFlag=0;
 		if(searchContent==null||searchContent=="")
 		{
-            for(i=0;i<issueList.length;i++)
-                issueList[i].style.display="block";
+           displayIssue(listSelectedItem);
 		}
 		else {
             for (i = 0; i < issueList.length; i++) {
@@ -169,7 +179,7 @@
                         break;
                     }
                 }
-                if (matchFlag == 1)	//find match label
+                if (matchFlag == 1&&issueList[i].style.display!="none")	//find match label
                 {
                     issueList[i].style.display = 'block';
                 }
@@ -272,6 +282,7 @@
 		}
     }
     function generateLabelList(curElement) {
+
 		curElement.setAttribute("disabled","true");
 		var labelList=document.getElementById("LabelList");
 		var curList=document.createElement("div");
@@ -285,14 +296,13 @@
 		curList.dataset.labelName=labelName;
 		var labelNameNode=document.createTextNode(labelName);
 		labelListHeader.appendChild(labelNameNode);
-		curList.appendChild(labelListHeader);
 
         var issueList=document.getElementsByClassName("IssueInfo");
         var matchFlag=0;
         var issueUl=document.createElement("ul");
         issueUl.className="labellistul";
         issueUl.setAttribute("id","labellist"+labelName);
-
+        var currentIssueNum=0;
         for(var i=0;i<issueList.length;i++)
 		{
 		    matchFlag=0;
@@ -304,6 +314,7 @@
 			    if(labels[j].dataset.label==labelName)
 				{
 				 matchFlag=1;
+				 currentIssueNum++;
 				 curList.style.borderTopColor=labels[j].style.backgroundColor;
 				 curList.style.borderTopWidth="thick";
 				 break;
@@ -332,7 +343,7 @@
                     {
                         var labelNode=document.createElement("button");
                         labelNode.className="label";
-                        labelNode.style.backgroundColor=labels[j].style.backgroundColor;
+                        labelNode.style.backgroundColor= labels[j].style.backgroundColor;
                         labelNode.dataset.label=labels[j].dataset.label;
                         labelNode.appendChild(document.createTextNode(labels[j].dataset.label));
                         labelDiv.appendChild(labelNode);
@@ -348,9 +359,56 @@
 		}
 		issueUl.ondragover=allowDrop;
         issueUl.ondrop=drop;
+
+        var issueNumDiv=document.createElement("div");
+        issueNumDiv.className="issuenum";
+
+        var deleteLabelListButton=document.createElement("img");
+        deleteLabelListButton.style.maxHeight="20px";
+        deleteLabelListButton.src="delete.png"
+		deleteLabelListButton.style.border="solid thin black";
+        deleteLabelListButton.style.marginRight="5px";
+        deleteLabelListButton.className="alignright";
+        deleteLabelListButton.onclick=deleteLabelList;
+
+
+        var currentIssueNumSpan=document.createElement("span");
+        currentIssueNumSpan.appendChild(document.createTextNode(currentIssueNum.toString()));
+        var addLabelIssueButton=document.createElement("button");
+        addLabelIssueButton.appendChild(document.createTextNode("+"));
+        addLabelIssueButton.onclick=labelListAddIssue;
+        issueNumDiv.appendChild(currentIssueNumSpan);
+        issueNumDiv.appendChild(addLabelIssueButton);
+        labelListHeader.appendChild(issueNumDiv);
+        labelListHeader.appendChild(deleteLabelListButton);
+
+        curList.appendChild(labelListHeader);
 		curList.appendChild(issueUl);
         labelList.appendChild(curList);
+
     }
+
+		function deleteLabelList(event) {
+			var curLabelList=event.target.parentNode.parentNode;
+			var sureDelete=confirm("Are you sure want to delete this list");
+			 if(sureDelete==true){
+				 curLabelList.parentNode.removeChild(curLabelList) ;
+			     var labelCheckbox=document.getElementById("labelCheckbox");
+
+			     for(var i=0;i<labelCheckbox.children.length;i++)
+				 {
+
+				     if(labelCheckbox.children[i].value==curLabelList.dataset.labelName){
+
+				         labelCheckbox.children[i].checked = false;
+				         labelCheckbox.children[i].disabled = false;
+
+				         break;
+					 }
+				 }
+			 }
+        }
+
 		function issueDragStart(event) {
 			var issueLi=event.target;
 			var childList=issueLi.childNodes;
@@ -423,9 +481,12 @@
                 labelDiv.display = "inline";
                 for (labelIndex = 0; curLabel != "" && curLabel != null; labelIndex++) {
                     var labelNode = document.createElement("button");
+                    var color=labelColorList[existLabelList.indexOf(curLabel)];
+
                     labelNode.className = "label";
                     labelNode.dataset.label = curLabel;
                     labelNode.appendChild(document.createTextNode(curLabel));
+                    labelNode.style.backgroundColor=color;
                     labelDiv.appendChild(labelNode);
                     curLabel = event.dataTransfer.getData("label" + (labelIndex + 1).toString());
                 }
@@ -448,17 +509,36 @@
                         labelDiv.display = "inline";
                         for (labelIndex = 0; curLabel != "" && curLabel != null; labelIndex++) {
                             var labelNode = document.createElement("button");
+                            var color=labelColorList[existLabelList.indexOf(curLabel)];
                             labelNode.className = "label";
                             labelNode.dataset.label = curLabel;
+                            labelNode.style.backgroundColor=color;
+
                             labelNode.appendChild(document.createTextNode(curLabel));
                             labelDiv.appendChild(labelNode);
                             curLabel = event.dataTransfer.getData("label" + (labelIndex + 1).toString());
                         }
                         issueLi.appendChild(labelDiv);
                         targetNode.appendChild(issueLi);
+                        var issueInfoList=document.getElementsByClassName("IssueInfo");
+                        for(var i=0;i<issueInfoList.length;i++){
+                            if(issueInfoList[i].getElementsByClassName("issueSeq")[0].innerHTML==issueSeq){
+                                var issueInfoLabelList=issueInfoList[i].getElementsByClassName("label");
+                                for(var j=0;j<issueInfoLabelList.length;j++){
+                                    if(issueInfoLabelList[i].dataset.label==previousLabelName){
+                                        issueInfoLabelList[i].dataset.label=currentLabelName;
+                                        issueInfoLabelList[i].innerHTML=currentLabelName;
+                                        issueInfoLabelList[i].style.backgroundColor=labelColorList[existLabelList.indexOf(currentLabelName)];
+                                        break;
+									}
+								}
+								break;
+							}
+						}
                     }
                     else {
                         //curSeqList[exist] issueIndex
+
                         for (var i = 0; i < targetNode.children.length; i++) {
                             if (curSeqList[exist] == targetNode.children[i].getElementsByClassName("issueSeq")[0].innerHTML) {
                                 //found the repeated element
@@ -466,7 +546,8 @@
                                 var repeatedIssue = targetNode.children[i];//the element tag is li
                                 var repeatedIssueLabelDiv = repeatedIssue.getElementsByClassName("labelLiDiv")[0];
                                 var existLabels = repeatedIssueLabelDiv.children;
-                                for (var j = 0; i < existLabels.length; j++) {
+                                for (var j = 0; j < existLabels.length; j++) {
+
                                     if (existLabels[j].dataset.label == previousLabelName) {
                                         repeatedIssueLabelDiv.removeChild(existLabels[j]);
                                         break;
@@ -490,6 +571,50 @@
 
 			}
 			return seqList;
+        }
+        
+        function labelListAddIssue(event) {
+			var issueWithLabelDiv=document.createElement("div");
+			issueWithLabelDiv.className="addIssueInLabelList";
+			var issueTitle=document.createElement("span");
+			issueTitle.innerHTML="Title";
+			issueWithLabelDiv.appendChild(issueTitle);
+			issueWithLabelDiv.appendChild(document.createElement("br"));
+			var addIssueForm=document.createElement("form");
+			addIssueForm.style.display="block"
+			var issueTitleInput=document.createElement("input");
+			issueTitleInput.type="text";
+			var addIssueButtonDiv=document.createElement("div");
+			addIssueButtonDiv.style.display="inline";
+			var submitIssueButton=document.createElement("input");
+			submitIssueButton.type="submit";
+			submitIssueButton.innerHTML="Submit Issue";
+
+			addIssueForm.onsubmit=addNewIssue;
+
+			var cancelButton=document.createElement("button");
+			cancelButton.className="alignright";
+			cancelButton.innerHTML="Cancel";
+			cancelButton.onclick=cancelIssueSubmit;
+
+			addIssueButtonDiv.appendChild(submitIssueButton);
+			addIssueButtonDiv.appendChild(cancelButton);
+			addIssueForm.appendChild(issueTitleInput);
+			addIssueForm.appendChild(document.createElement("br"));
+			addIssueForm.appendChild(addIssueButtonDiv);
+			issueWithLabelDiv.appendChild(addIssueForm);
+			event.target.parentNode.parentNode.appendChild(issueWithLabelDiv);
+
+        }
+
+        function addNewIssue(event) {
+			event.preventDefault();
+        }
+
+        function cancelIssueSubmit(event) {
+			var addIssueDiv=event.target.parentNode.parentNode.parentNode;
+			var labelListHeader=addIssueDiv.parentNode;
+			labelListHeader.removeChild(addIssueDiv);
         }
 	</script>
 </head>
@@ -568,8 +693,10 @@
 		</form>
 	<div class="IssueInfo" data-issuestatus="Open">
 		<span class="issuename">Open Test Issue1</span><br/>
-		<span class="issueSeq">#3 </span><span>opened 2 days ago </span><span class=label data-label="bug" style="background-color:#ff3333;"
-		>bug</span><span class=label data-label="edge" style="background-color:#ff33ff;"
+		<span class="issueSeq">#3 </span><span>opened 2 days ago </span>
+		<span class=label data-label="bug" style="background-color:#ff3333;"
+		>bug</span>
+		<span class=label data-label="edge" style="background-color:#33aa55;"
 	>edge</span>
 		<span class="alignright">update 1 days ago</span><br/>
 	</div>
@@ -599,14 +726,14 @@
 			<div class="alignleft">
 			<button type="button" id="addList" class="btn_white"
 					onmouseover="addListStatusSwitch(1)" onmouseleave="addListStatusSwitch(0)"
-					onclick="addListOnClick()" onblur="alert('blur')">Add list</button>
-				<div class="dropdown_menu" id="addListMenu" style="display: none" >
+					onclick="addListOnClick()" >Add list</button>
+				<div class="dropdown_menu" id="addListMenu" style="display: none" onblur="addListOnBlur()">
 					<div style="text-align: center;margin: 5px;"><span >Add list</span></div>
 					<div class="bi_border"><p>Create lists from the labels you use in your project. Issues with that label will automatically be added to the list.</p></div>
 					<form>
 						<input type="text" placeholder="Search" style="margin:5px;height: 24px;width: 200px"/>
 					</form>
-					<form>
+					<form id="labelCheckbox">
 						<input type="checkbox" name="label" value="bug" onclick="generateLabelList(this)"/>bug <br/>
 						<input type="checkbox" name="label" value="issue" onclick="generateLabelList(this)"/>issue
 					</form>
@@ -619,7 +746,7 @@
 		<div id="LabelList">
 		<div id="Backlog" class="alignleft">
 		<div class="labellist" data-foldstatus="unfolded" >
-			<div class="labellistheader"><button onclick="labelListFold('Backlog',0)">-</button>Backlog<span class="issuenum">1
+			<div class="labellistheader"><button onclick="labelListFold('Backlog',0)">-</button>Backlog<span class="issuenum">0
 				<button type="button">+</button></span></div>
 			</div>
 			<div data-foldstatus="folded" style="display: none">
