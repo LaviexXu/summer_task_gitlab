@@ -209,7 +209,7 @@
 		curEle.className="subheaderselected";
 		subheaderSelectedItem=curEle.title;
     }
-	
+
 	function displayIssue(status){
 		var issueList=document.getElementsByClassName("IssueInfo");
 		var i=0;
@@ -327,7 +327,7 @@
 			    var issueName=issueList[i].getElementsByClassName("issuename");
 			    var issueNameBold=document.createElement("span");
 			    issueNameBold.appendChild(document.createTextNode(issueName[0].innerHTML));
-			    issueNameBold.setAttribute("class","issuename");
+			    issueNameBold.className="issuename";
                 var issueSeq=issueList[i].getElementsByClassName("issueSeq");
                 var issueSeqNode=document.createElement("span");
 				issueSeqNode.appendChild(document.createTextNode(issueSeq[0].innerHTML));
@@ -410,6 +410,7 @@
         }
 
 		function issueDragStart(event) {
+            console.log('drag start');
 			var issueLi=event.target;
 			var childList=issueLi.childNodes;
 			var issueName;
@@ -429,7 +430,7 @@
 			        event.dataTransfer.setData("label"+labelIndex.toString(),childList[i].children[labelIndex].dataset.label);
 
                     }
-				}
+				}// bean
 
 			}
 			event.dataTransfer.setData("issueName",issueName);
@@ -439,16 +440,17 @@
 
 		}
         function issueDragEnd(event){
-            if (event.dataTransfer.dropEffect == 'move'){
-
+            console.log('dragEnd, event' + event);
                 event.target.parentNode.removeChild(event.target);
-			}
 		}
         function allowDrop(event) {
-			event.preventDefault();
+            console.log("allowDrop");
+            event.preventDefault();
         }
         function drop(event) {
+            console.log("drop");
 			event.preventDefault();
+			console.log("dropEffect on drop:"+event.dataTransfer.dropEffect);
 			var issueName=event.dataTransfer.getData("issueName");
 			var issueSeq=event.dataTransfer.getData("issueSeq");
 			var issueLi=document.createElement("li");
@@ -469,7 +471,9 @@
             var previousLabelName=event.dataTransfer.getData("issueLabel");
             var currentLabelName=targetNode.parentNode.dataset.labelName;
 
-            if(targetNode.nodeName!="UL"|| previousLabelName == currentLabelName){
+            console.log("start create issueLi, nodeName: " + targetNode.nodeName +
+                ", previousLabelName: " + previousLabelName + ",curr: " + currentLabelName);
+            if(targetNode.nodeName!="UL"||previousLabelName==currentLabelName){
 				var preParentId=event.dataTransfer.getData("parentId");
 
 				var preParent=document.getElementById(preParentId);
@@ -492,6 +496,7 @@
                 }
                 issueLi.appendChild(labelDiv);
                 preParent.appendChild(issueLi);
+                console.log("add issueLi");
                 return;
 			}
 
@@ -572,7 +577,7 @@
 			}
 			return seqList;
         }
-        
+
         function labelListAddIssue(event) {
 			var issueWithLabelDiv=document.createElement("div");
 			issueWithLabelDiv.className="addIssueInLabelList";
@@ -671,7 +676,7 @@
 			<div class="clear">
 			</div>
 		</ul>
-	
+
 	</div>
 	<div id="List">
 	<div>
