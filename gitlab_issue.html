@@ -157,6 +157,7 @@
 	var subheaderSelectedItem="List";
 	var existLabelList=new Array("bug","issue","edge");
 	var labelColorList=new Array("#ff3333","#0099cc","#33aa55");
+	var removeChildFlag=false;
 
 	function matchIssueLabel(){
 		var issueList=document.getElementsByClassName("IssueInfo");
@@ -425,23 +426,29 @@
 			    if(childList[i].className=="issueSeq"){
                     issueSeq=childList[i].innerHTML
 				}
-				if(childList[i].className="labelLiDiv"){
+				if("labelLiDiv" == childList[i].className){
 			        for(;labelIndex<childList[i].children.length;labelIndex++){
 			        event.dataTransfer.setData("label"+labelIndex.toString(),childList[i].children[labelIndex].dataset.label);
 
                     }
 				}// bean
-
 			}
+
 			event.dataTransfer.setData("issueName",issueName);
             event.dataTransfer.setData("issueSeq",issueSeq);
             event.dataTransfer.setData("issueLabel",issueLi.parentNode.parentNode.dataset.labelName);
             event.dataTransfer.setData("parentId",issueLi.parentNode.id);
+            removeChildFlag=false;
 
 		}
         function issueDragEnd(event){
             console.log('dragEnd, event' + event);
+            console.log("remove child="+event.dataTransfer.getData("removeChild"));
+            if(event.dataTransfer.dropEffect=="copy"
+           &&removeChildFlag==true){
                 event.target.parentNode.removeChild(event.target);
+            }
+
 		}
         function allowDrop(event) {
             console.log("allowDrop");
@@ -470,39 +477,19 @@
             var targetNode=event.target;
             var previousLabelName=event.dataTransfer.getData("issueLabel");
             var currentLabelName=targetNode.parentNode.dataset.labelName;
+            event.dataTransfer.setData("curLabel",currentLabelName);
 
             console.log("start create issueLi, nodeName: " + targetNode.nodeName +
                 ", previousLabelName: " + previousLabelName + ",curr: " + currentLabelName);
             if(targetNode.nodeName!="UL"||previousLabelName==currentLabelName){
-				var preParentId=event.dataTransfer.getData("parentId");
 
-				var preParent=document.getElementById(preParentId);
-                var labelIndex = 0;	//append the old label to the issue
-                var curLabel = event.dataTransfer.getData("label" + labelIndex.toString());
-
-                var labelDiv = document.createElement("div");
-                labelDiv.className = "labelLiDiv";
-                labelDiv.display = "inline";
-                for (labelIndex = 0; curLabel != "" && curLabel != null; labelIndex++) {
-                    var labelNode = document.createElement("button");
-                    var color=labelColorList[existLabelList.indexOf(curLabel)];
-
-                    labelNode.className = "label";
-                    labelNode.dataset.label = curLabel;
-                    labelNode.appendChild(document.createTextNode(curLabel));
-                    labelNode.style.backgroundColor=color;
-                    labelDiv.appendChild(labelNode);
-                    curLabel = event.dataTransfer.getData("label" + (labelIndex + 1).toString());
-                }
-                issueLi.appendChild(labelDiv);
-                preParent.appendChild(issueLi);
                 console.log("add issueLi");
                 return;
 			}
 
 			var curSeqList=getChildNodesSeq(targetNode.childNodes);
 
-
+            removeChildFlag=true;
             var exist=curSeqList.indexOf(issueSeq);
 
                     if (exist == -1 ) {	//if the issue does not exist in the label list
@@ -558,6 +545,19 @@
                                         break;
                                     }
                                 }
+                            }
+                        }
+                        var issueInfoList=document.getElementsByClassName("IssueInfo");
+                        for(var i=0;i<issueInfoList.length;i++){
+                            if(issueInfoList[i].getElementsByClassName("issueSeq")[0].innerHTML==issueSeq){
+                                var issueInfoLabelList=issueInfoList[i].getElementsByClassName("label");
+                                for(var j=0;j<issueInfoLabelList.length;j++){
+                                    if(issueInfoLabelList[i].dataset.label==previousLabelName){
+                                        issueInfoList[i].removeChild(issueInfoLabelList[j])
+                                        break;
+                                    }
+                                }
+                                break;
                             }
                         }
                     }
